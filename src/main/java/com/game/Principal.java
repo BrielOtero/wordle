@@ -2,6 +2,7 @@
 package com.game;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -25,262 +26,277 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 public class Principal extends JFrame implements ActionListener, ItemListener {
-    JLabel lblLetra;
-    JLabel[][] lblLetras = new JLabel[10][5];
-    JRadioButton rdbEstandar;
-    JRadioButton rdbFacil;
-    ButtonGroup grpDificultad;
-    JButton btnInicio;
-    JTextField txfPalabra;
-
-    int letraX;
-    int letraY;
-    int letraWH = 40;
-
-    int opW = 100;
-    int opH = 20;
-    int opX = 7;
-    int opSeparacion = 10;
-
-    String barraOS = System.getProperty("file.separator");
-    String homeUsu = System.getProperty("user.home");
-
-    int numeroRandom = 0;
-
-    String[] palabrasSplit;
-    String palabras = "";
-
-    private String palabra = "";
-    private int intentos = 6;
-
-    String palabraUsuario = "";
-    int filaActual = 0;
-
-    boolean jugando = false;
-
-    public Principal() {
-        super("Wordle");
-        setLayout(null);
-        setFocusable(true);
-
-        MouseHandler mouseHandler = new MouseHandler();
-        KeyHandler keyHandler = new KeyHandler();
-
-        rdbEstandar = new JRadioButton("Estándar");
-        rdbEstandar.setSize(opW, opH);
-        rdbEstandar.setLocation(opX, 10);
-        rdbEstandar.setSelected(true);
-        rdbEstandar.addMouseListener(mouseHandler);
-        rdbEstandar.addItemListener(this);
-        add(rdbEstandar);
+	JLabel lblLetra;
+	JLabel[][] lblLetras = new JLabel[10][5];
+	JRadioButton rdbEstandar;
+	JRadioButton rdbFacil;
+	ButtonGroup grpDificultad;
+	JButton btnInicio;
+	JTextField txfPalabra;
 
-        rdbFacil = new JRadioButton("Fácil");
-        rdbFacil.setSize(opW, opH);
-        rdbFacil.setLocation(opX, rdbEstandar.getLocation().y + rdbEstandar.getHeight() + opSeparacion);
-        rdbFacil.addMouseListener(mouseHandler);
-        rdbFacil.addItemListener(this);
-        add(rdbFacil);
+	int letraX;
+	int letraY;
+	int letraWH = 40;
+
+	int opW = 100;
+	int opH = 20;
+	int opX = 7;
+	int opSeparacion = 10;
 
-        grpDificultad = new ButtonGroup();
-        grpDificultad.add(rdbEstandar);
-        grpDificultad.add(rdbFacil);
+	String barraOS = System.getProperty("file.separator");
+	String homeUsu = System.getProperty("user.home");
+
+	int numeroRandom = 0;
+
+	String[] palabrasSplit;
+	String palabras = "";
 
-        btnInicio = new JButton("Inicio");
-        btnInicio.setSize(opW, opH);
-        btnInicio.setLocation(opX, rdbFacil.getLocation().y + rdbFacil.getHeight() + opSeparacion);
-        btnInicio.addActionListener(this);
-        add(btnInicio);
+	private String palabra = "";
+	private int intentos = 6;
+
+	String palabraUsuario = "";
+	int filaActual = 0;
+
+	boolean jugando = false;
+
+	public Principal() {
+		// Titulo
+		super("Wordle");
+		setLayout(null);
+
+		setFocusable(true);
 
-        txfPalabra = new JTextField();
-        txfPalabra.setSize(opW, opH);
-        txfPalabra.setLocation(opX, btnInicio.getLocation().y + btnInicio.getHeight() + opSeparacion);
-        txfPalabra.setEnabled(false);
-        txfPalabra.addActionListener(this);
-        add(txfPalabra);
+		// Mouse Handler
+
+		MouseHandler mouseHandler = new MouseHandler();
 
-        letraX = 120;
-        letraY = 10;
-        for (int i = 0; i < lblLetras.length; i++) {
+		// Creación dinámica de JLabels
+		letraX = 120;
+		letraY = 10;
+		for (int i = 0; i < lblLetras.length; i++) {
 
-            for (int j = 0; j < lblLetras[i].length; j++) {
+			for (int j = 0; j < lblLetras[i].length; j++) {
+
+				lblLetra = new JLabel();
+				lblLetra.setSize(letraWH, letraWH);
+				lblLetra.setOpaque(true);
+				lblLetra.setHorizontalAlignment(JLabel.CENTER);
+				lblLetra.setVerticalAlignment(JLabel.CENTER);
+				lblLetra.setForeground(Color.white);
+				lblLetra.setLocation(letraX, letraY);
+				lblLetra.setVisible(false);
+				lblLetras[i][j] = lblLetra;
 
-                lblLetra = new JLabel();
-                lblLetra.setSize(letraWH, letraWH);
-                lblLetra.setOpaque(true);
-                lblLetra.setHorizontalAlignment(JLabel.CENTER);
-                lblLetra.setVerticalAlignment(JLabel.CENTER);
-                lblLetra.setForeground(Color.white);
-                lblLetra.setLocation(letraX, letraY);
-                lblLetra.setVisible(false);
-                lblLetras[i][j] = lblLetra;
+				if (j == 4) {
+					this.letraX = 120;
+					this.letraY += 50;
 
-                if (j == 4) {
-                    this.letraX = 120;
-                    this.letraY += 50;
+				} else {
+					letraX += 50;
+				}
+				add(lblLetras[i][j]);
 
-                } else {
-                    letraX += 50;
-                }
-                add(lblLetras[i][j]);
+			}
 
-            }
+		}
 
-        }
+		// Radiobuttons y buttongroup
 
-        addKeyListener(keyHandler);
+		rdbEstandar = new JRadioButton("Estándar");
+		rdbEstandar.setSize(opW, opH);
+		rdbEstandar.setLocation(opX, 10);
+		rdbEstandar.setSelected(true);
+		rdbEstandar.addMouseListener(mouseHandler);
+		rdbEstandar.addItemListener(this);
+		add(rdbEstandar);
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
+		rdbFacil = new JRadioButton("Fácil");
+		rdbFacil.setSize(opW, opH);
+		rdbFacil.setLocation(opX, rdbEstandar.getLocation().y + rdbEstandar.getHeight() + opSeparacion);
+		rdbFacil.addMouseListener(mouseHandler);
+		rdbFacil.addItemListener(this);
+		add(rdbFacil);
 
-                if (jugando) {
-                    int res = JOptionPane.showConfirmDialog(null, "Seguro que quieres finalizar", "Wordle",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+		grpDificultad = new ButtonGroup();
+		grpDificultad.add(rdbEstandar);
+		grpDificultad.add(rdbFacil);
 
-                    if (res == JOptionPane.YES_OPTION) {
-                        dispose();
-                    }
+		// Botón inicio
 
-                } else {
-                    dispose();
-                }
-            }
-        });
+		btnInicio = new JButton("Inicio");
+		btnInicio.setSize(opW, opH);
+		btnInicio.setLocation(opX, rdbFacil.getLocation().y + rdbFacil.getHeight() + opSeparacion);
+		btnInicio.addActionListener(this);
+		add(btnInicio);
 
-    }
+		// Textfield palabra
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnInicio) {
-            jugando = true;
-            txfPalabra.setEnabled(true);
+		txfPalabra = new JTextField();
+		txfPalabra.setSize(opW, opH);
+		txfPalabra.setLocation(opX, btnInicio.getLocation().y + btnInicio.getHeight() + opSeparacion);
+		txfPalabra.setEnabled(false);
+		txfPalabra.addActionListener(this);
+		add(txfPalabra);
 
-            for (int i = 0; i < intentos; i++) {
+		// Gestión de cierre dependiendo de que txfPalabra esté habilitado (significa
+		// que se está en juego)
 
-                for (int j = 0; j < lblLetras[i].length; j++) {
-                    lblLetras[i][j].setVisible(true);
-                    lblLetras[i][j].setBackground(Color.white);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
 
-                    try (Scanner s = new Scanner(new File(homeUsu + barraOS + "palabras.txt"))) {
+				if (jugando) {
+					int res = JOptionPane.showConfirmDialog(null, "Seguro que quieres finalizar", "Wordle",
+							JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
-                        while (s.hasNext()) {
+					if (res == JOptionPane.YES_OPTION) {
+						dispose();
+					}
 
-                            palabras = s.next() + "\n";
+				} else {
+					dispose();
+				}
+			}
+		});
 
-                        }
+		// Se añade el KeyListener a todos los componentes y al JFrame
 
-                    } catch (IOException u) {
-                    }
+		KeyHandler keyHandler = new KeyHandler();
 
-                }
+		for (Component c : this.getContentPane().getComponents()) {
+			c.addKeyListener(keyHandler);
+		}
+		addKeyListener(keyHandler);
 
-            }
-            palabrasSplit = palabras.split(";");
+	}
 
-            numeroRandom = (int) (Math.random() * palabrasSplit.length);
-            palabra = palabrasSplit[numeroRandom];
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnInicio) {
+			jugando = true;
+			txfPalabra.setEnabled(true);
 
-            this.setTitle(palabra);
-        }
+			for (int i = 0; i < intentos; i++) {
 
-        if (e.getSource() == txfPalabra) {
-            palabraUsuario = txfPalabra.getText();
+				for (int j = 0; j < lblLetras[i].length; j++) {
+					lblLetras[i][j].setVisible(true);
+					lblLetras[i][j].setBackground(Color.white);
 
-            palabraUsuario = palabraUsuario.toUpperCase();
+					try (Scanner s = new Scanner(new File(homeUsu + barraOS + "palabras.txt"))) {
 
-            if (palabraUsuario.length() == 5) {
+						palabras = s.next();
 
-                if (filaActual <= intentos) {
+					} catch (IOException u) {
+					}
 
-                    for (int i = 0; i < palabraUsuario.length(); i++) {
-                        lblLetras[filaActual][i].setBackground(comprueba(palabraUsuario.charAt(i), i));
-                        lblLetras[filaActual][i].setText(Character.toString(palabraUsuario.charAt(i)));
-                    }
-                    filaActual++;
+				}
 
-                }
+			}
+			palabrasSplit = palabras.split(";");
 
-                if (filaActual >= intentos || palabraUsuario.equals(palabra)) {
-                    txfPalabra.setEnabled(false);
-                    Secundario secundario = new Secundario(this, palabra, filaActual);
-                    secundario.setSize(300, 300);
-                    secundario.setVisible(true);
-                    secundario.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			numeroRandom = (int) (Math.random() * palabrasSplit.length);
+			palabra = palabrasSplit[numeroRandom];
 
-                }
+			this.setTitle(palabra);
+		}
 
-            }
-        }
+		if (e.getSource() == txfPalabra) {
+			palabraUsuario = txfPalabra.getText();
 
-    }
+			palabraUsuario = palabraUsuario.toUpperCase();
 
-    @Override
-    public void itemStateChanged(ItemEvent e) {
+			if (palabraUsuario.length() == 5) {
 
-        if (e.getSource() == rdbEstandar) {
+				if (filaActual <= intentos) {
 
-            if (rdbEstandar.isSelected()) {
+					for (int i = 0; i < palabraUsuario.length(); i++) {
+						lblLetras[filaActual][i].setBackground(comprueba(palabraUsuario.charAt(i), i));
+						lblLetras[filaActual][i].setText(Character.toString(palabraUsuario.charAt(i)));
+					}
+					filaActual++;
 
-                intentos = 6;
-            }
-        }
+				}
 
-        if (e.getSource() == rdbFacil) {
-            if (rdbFacil.isSelected()) {
-                intentos = 10;
-				
-            }
-        }
+				if (filaActual >= intentos || palabraUsuario.equals(palabra)) {
+					txfPalabra.setEnabled(false);
+					Secundario secundario = new Secundario(this, palabra, filaActual);
+					secundario.setSize(300, 300);
+					secundario.setVisible(true);
 
-    }
+				}
 
-    private class MouseHandler extends MouseAdapter {
+			}
+		}
 
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            super.mouseEntered(e);
-            e.getComponent().setForeground(Color.yellow);
+	}
 
-        }
+	@Override
+	public void itemStateChanged(ItemEvent e) {
 
-        @Override
-        public void mouseExited(MouseEvent e) {
-            super.mouseExited(e);
-            e.getComponent().setForeground(Color.BLACK);
-        }
+		if (e.getSource() == rdbEstandar) {
 
-    }
+			if (rdbEstandar.isSelected()) {
 
-    public Color comprueba(char letra, int posicion) {
+				intentos = 6;
+			}
+		}
 
-        boolean tieneLetra = false;
+		if (e.getSource() == rdbFacil) {
+			if (rdbFacil.isSelected()) {
+				intentos = 10;
 
-        for (int i = 0; i < palabra.length(); i++) {
-            if (palabra.charAt(i) == letra) {
-                tieneLetra = true;
-            }
+			}
+		}
 
-        }
+	}
 
-        if (tieneLetra && palabra.charAt(posicion) == letra) {
-            return Color.decode("#126a06");
-        } else if (tieneLetra) {
-            return Color.orange;
-        } else {
-            return Color.gray;
-        }
-    }
+	private class MouseHandler extends MouseAdapter {
 
-    private class KeyHandler extends KeyAdapter {
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			super.mouseEntered(e);
+			e.getComponent().setForeground(Color.yellow);
 
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_F5) {
-                jugando = true;
-            }
-        }
+		}
 
-    }
+		@Override
+		public void mouseExited(MouseEvent e) {
+			super.mouseExited(e);
+			e.getComponent().setForeground(Color.BLACK);
+		}
+
+	}
+
+	public Color comprueba(char letra, int posicion) {
+
+		boolean tieneLetra = false;
+
+		for (int i = 0; i < palabra.length(); i++) {
+			if (palabra.charAt(i) == letra) {
+				tieneLetra = true;
+			}
+
+		}
+
+		if (tieneLetra && palabra.charAt(posicion) == letra) {
+			return Color.decode("#126a06");
+		} else if (tieneLetra) {
+			return Color.orange;
+		} else {
+			return Color.gray;
+		}
+	}
+
+	private class KeyHandler extends KeyAdapter {
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_F5) {
+				jugando = true;
+			}
+		}
+
+	}
 
 }
